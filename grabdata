@@ -1,0 +1,48 @@
+import pandas as pd
+from requests import Request, Session
+import json
+import time
+
+coinid = 'bitcoin'
+
+startdate = '01-01-2021'
+enddate = '06-01-2021'
+
+maxtries = 10
+
+headers = {'accept': 'application/json'}
+session = Session()
+session.headers.update(headers)
+
+dates = pd.date_range(startdate, enddate)
+dates = dates.strftime('%d-%m-%Y')
+
+prices=[]
+
+for x in dates:
+    current_try = 0
+    while True:
+        try:
+            current_try += 1
+            if(current_try > maxtries):
+                print('Too many errors, skipping date')
+                prices.append(0)
+                break
+            time.sleep(1)
+            url = f"https://api.coingecko.com/api/v3/coins/{coinid}/history?date={x}"
+            print(url)
+            response = session.get(url)
+            res = json.loads(response.text)
+            price = res['market_data']['current_price']['btc']
+            #price = res['market_data']['current_price']['usd']
+            prices.append(price)
+            print(price)
+
+
+            break
+        except:
+            continue
+
+df = pd.DataFrame(data = {'dates':dates, "prices":prices})
+print(df)
+df.to_csv(f'{coinid}.csv', index=False)
