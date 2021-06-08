@@ -1,0 +1,15 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('bitcoin.csv')
+print(df)
+
+plt.style.use('dark_background')
+plt.plot(df['dates'],df['prices'])
+plt.xticks(np.arange(0, len(df['dates'])+1, 15), rotation=90)
+
+plt.xlabel('Date')
+plt.ylabel('Price (btc)')
+plt.title('Bitcoin Price in BTC')
+plt.show()
